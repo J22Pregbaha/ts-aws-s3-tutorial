@@ -1,4 +1,6 @@
-import { S3Client, CreateBucketCommand, PutObjectCommand, ListBucketsCommand, ListObjectsCommand } from '@aws-sdk/client-s3';
+import { S3Client, CreateBucketCommand,
+    PutObjectCommand, ListBucketsCommand,
+    ListObjectsCommand, DeleteBucketCommand } from '@aws-sdk/client-s3';
 
 const s3Client = new S3Client({region: 'us-west-2'});
 
@@ -17,6 +19,18 @@ class BucketManager {
             Key: key,
             Body: body
         };;
+    }
+    
+    createBucket = async () => {
+        try {
+            const data = await s3Client.send(
+                new CreateBucketCommand({Bucket: this.params.Bucket})
+            );
+            console.log("Successfully created a bucket called ", data.Location);
+            return data; // For unit tests
+        } catch (error) {
+            console.error("Error", error);
+        }
     }
 
     listBuckets = async () => {
@@ -42,18 +56,6 @@ class BucketManager {
             console.error("Error", error);
         }
     }
-    
-    createBucket = async () => {
-        try {
-            const data = await s3Client.send(
-                new CreateBucketCommand({Bucket: this.params.Bucket})
-            );
-            console.log("Successfully created a bucket called ", data.Location);
-            return data; // For unit tests
-        } catch (error) {
-            console.error("Error", error);
-        }
-    }
 
     putInsideBucket = async () => {
         try {
@@ -66,7 +68,19 @@ class BucketManager {
             console.error("Error", error);
         }
     }
+
+    deleteBucket = async () => {
+        try {
+            const data = await s3Client.send(
+                new DeleteBucketCommand(this.params)
+            );
+            console.log("Success - bucket deleted");
+            return data; // For unit tests
+        } catch (error) {
+            console.error("Error", error);
+        }
+    }
 }
 
-let ekwe = new BucketManager('node-sample-bucket-ekwe');
-ekwe.listObjectsInABucket();
+let ekwe = new BucketManager('v3-node-sample-bucket-ekwe');
+ekwe.deleteBucket();
