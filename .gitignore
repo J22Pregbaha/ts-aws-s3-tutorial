@@ -41,5 +41,4 @@ dist/**/*
 yarn.lock
 
 # all js files
-*.js
 *.js.map
